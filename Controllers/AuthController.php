@@ -60,12 +60,11 @@ class AuthController
     public function handleLogin()
     {
         if (isset($_POST['email']) && isset($_POST['password'])) {
-            if($this->login($_POST['email'], $_POST['password'])){
-                
+            if ($this->login($_POST['email'], $_POST['password'])) {
             }
         }
     }
-    public function handleRegister()
+    public function handleRegister(): void
     {
         if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['username']) && isset($_POST['checkPassword'])) {
 
@@ -77,15 +76,18 @@ class AuthController
             $checkFormIntegrity = empty($email) || empty($password) || empty($checkPassword) || empty($username);
             if ($checkFormIntegrity) {
                 echo "Le formulaire est incomplet";
-                die;
+                return;
             }
             if ($checkPassword === $password) {
                 $this->register(trim($email), trim($password), trim($username));
+                return;
             } else {
                 echo '<span style="color: red;">Les champs des mots de passe ne correspondent pas.';
+                return;
             }
         } else {
             echo "Le formulaire est incomplet";
+            return;
         }
     }
     public function showLoginForm()
