@@ -1,5 +1,6 @@
 <?php
 require_once "../config/database.php";
+require_once "../config/helpers.php";
 class AuthController
 {
 
@@ -13,15 +14,19 @@ class AuthController
             if ($statement->execute()) {
                 $result = $statement->fetchAll(PDO::FETCH_ASSOC);
                 if (count($result) === 1 && password_verify($password, $result[0]['password'])) {
-                    echo "<h2>Bonjour " . $result[0]['pseudo'] . "</h2>";
+                    $userInformation = $result[0];
+                    $_SESSION['UUID'] = $userInformation['UUID'];
+                    $_SESSION['pseudo'] = $userInformation['pseudo'];
+                    Helpers::setFlash("Connexion réussi !", "success");
+                    header("Location: ?page=home");
+                    exit;
                     return true;
                 } else {
-                    echo "<h3>Login ou mot de passe incorrect </h3>";
                     return false;
                 }
             };
         } else {
-            echo "<h3>Impossible de communiquer avec la base de donnée, contactez l'administrateur.</h3>";
+            Helpers::setFlash("Impossible de communiquer avec la base de données, contacter l'administrateur", "error");
             return false;
         }
         return false;
@@ -37,7 +42,7 @@ class AuthController
                 $result = $statement->fetchAll(PDO::FETCH_ASSOC);
                 if (count($result) === 1) {
                     //On retourne false car on souhaite que l'adresse mail soit unique.
-                    echo "<h3>L'adresse mail est déjà utilisée...</h3>";
+                    Helpers::setFlash("L'adresse mail est déjà utilisée.", "warning");
                     return false;
                 } else  if (count($result) === 0) {
                     //Il n'y a pas la même adresse mail, donc on peut insérer les données dans la base de donnée
@@ -47,13 +52,15 @@ class AuthController
                     $registerStmt->bindValue(':email', $email);
                     $registerStmt->bindValue(':password', password_hash($password, PASSWORD_BCRYPT));
                     if ($registerStmt->execute()) {
-                        echo "<h3>L'inscription est réussi ! :D</h3>";
+                        Helpers::setFlash("L'inscription a réussi !", "success");
+                        header("Location: ?page=login");
+                        exit;
                         return true;
                     }
                 }
             }
         } else {
-            echo "<h3>Impossible de communiquer avec la base de donnée, contactez l'administrateur.</h3>";
+            Helpers::setFlash("Impossible de communiquer avec la base de données, contacter l'administrateur", "error");
         }
         return false;
     }
@@ -61,6 +68,11 @@ class AuthController
     {
         if (isset($_POST['email']) && isset($_POST['password'])) {
             if ($this->login($_POST['email'], $_POST['password'])) {
+                return;
+            } else {
+                Helpers::setFlash("L'adresse mail ou le mot de passe ne correspondent pas.", "error");
+                header("Location: ?page=login");
+                exit;
             }
         }
     }
@@ -75,7 +87,7 @@ class AuthController
 
             $checkFormIntegrity = empty($email) || empty($password) || empty($checkPassword) || empty($username);
             if ($checkFormIntegrity) {
-                echo "Le formulaire est incomplet";
+                Helpers::setFlash("Le formulaire est incomplet", "error");
                 return;
             }
             if ($checkPassword === $password) {
@@ -86,7 +98,7 @@ class AuthController
                 return;
             }
         } else {
-            echo "Le formulaire est incomplet";
+            Helpers::setFlash("Le formulaire est incomplet", "error");
             return;
         }
     }
@@ -97,5 +109,14 @@ class AuthController
     public function showRegisterForm()
     {
         include_once '../Views/auth/register.php';
+    }
+    public function logout(): void
+    {
+        session_unset();
+        session_destroy();
+        session_start();
+        Helpers::setFlash("Vous avez été déconnecté.", "warning");
+        header("Location: ?page=home");
+        exit;
     }
 }

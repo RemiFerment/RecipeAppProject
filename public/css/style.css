@@ -1,0 +1,31 @@
+.flash-message {
+    max-width: 400px;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px;
+    margin: 20px auto;
+    border: 1px solid;
+    position: absolute;
+    top: 20px;
+    right: 5%;
+}
+
+.success {
+    background-color: #7fff7f;
+    border-color: #4caf50;
+}
+
+.warning {
+    background-color: #ffe87f;
+    border-color: #ff9800;
+}
+
+.error {
+    background-color: #ff7f7f;
+    border-color: #f44336;
+}
+
+.neutral {
+    background-color: #7fccff;
+    border-color: #2196f3;
+}

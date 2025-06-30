@@ -7,7 +7,9 @@ class Router
         'conexion' => ['AuthController', 'login'],
         'register' => ['AuthController', 'showRegisterForm'],
         'register-submit' => ['AuthController', 'handleRegister'],
-        'home' => ['Controller', 'showHome']
+        'home' => ['Controller', 'showHome'],
+        'logout' => ['AuthController', 'logout'],
+        'recipe/create' => ['RecipeController', 'showRecipe']
     ];
     public function dispatch()
     {
@@ -41,4 +43,3 @@ class Router
         return "home";
     }
 }
-// ROUTER VERSION 1.3 - test by RGPT
