@@ -1,5 +1,4 @@
 <?php
-$specificScript = "create";
 require_once "../Views/recipe/ingredient.php";
 ?>
 <form method="post" action="?page=recipe-submit">
@@ -20,4 +19,4 @@ require_once "../Views/recipe/ingredient.php";
 
     <input type="submit" value="Ajouter la nouvelle recette">
 </form>
-<script src="./js/<?= $specificScript ?>.js" defer></script>
+<script src="./js/create.js" defer></script>

@@ -82,10 +82,12 @@ class AuthController
 
             $email = $_POST['email'];
             $password = $_POST['password'];
-            $username = $_POST['username'];
             $checkPassword = $_POST['checkPassword'];
+            $username = $_POST['username'];
+            $passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,}$";
+            $usernameRegex = "^.{4,}$";
 
-            $checkFormIntegrity = empty($email) || empty($password) || empty($checkPassword) || empty($username);
+            $checkFormIntegrity = (empty($email) || empty($password) || empty($checkPassword) || empty($username)) && (preg_match($passwordRegex,$password) && (preg_match($usernameRegex,$username)));
             if ($checkFormIntegrity) {
                 Helpers::setFlash("Le formulaire est incomplet", "error");
                 return;

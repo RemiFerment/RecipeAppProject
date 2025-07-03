@@ -1,3 +1,5 @@
+<?php
+?>
 <form method="post" action="?page=register-submit">
     <header>
         <h2>S'inscrire</h2>
@@ -13,4 +15,4 @@
 
     <input type="submit" value="S'inscrire" id="submit">
 </form>
-<?php
+<script src="./js/register.js" defer></script>
