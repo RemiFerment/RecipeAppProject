@@ -1,5 +1,5 @@
 <?php
-class Unit_measure
+class UnitMeasure
 {
     private int $id;
     private string $name;

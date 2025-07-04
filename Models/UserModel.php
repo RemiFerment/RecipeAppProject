@@ -56,7 +56,6 @@ class UserModel
         return false;
     }
 
-    //enlever static après test
     public function findByEmail(string $email): ?User
     {
         $pdo = Database::getConnection();
