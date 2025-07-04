@@ -4,7 +4,7 @@ class Helpers
 {
     public static function isAuthenticated(): bool
     {
-        return isset($_SESSION['UUID']) && isset($_SESSION['pseudo']);
+        return isset($_SESSION['UUID']) && isset($_SESSION['username']);
     }
 
     public static function isFlashSession()
@@ -14,10 +14,10 @@ class Helpers
             include "../Views/partials/flash.php";
         }
     }
-    public static function setFlash(string $message, string $type = "neutral"): void
+    public static function setFlash(string $message, string $type = "primary"): void
     {
-        if ($type !== "success" && $type !== "warning" && $type !== "error") {
-            $type = "neutral";
+        if ($type !== "success" && $type !== "warning" && $type !== "danger") {
+            $type = "primary";
         }
         $_SESSION['flash'][$type] = $message;
     }

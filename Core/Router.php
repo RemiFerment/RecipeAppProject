@@ -2,6 +2,7 @@
 class Router
 {
     private array $routes = [
+        'test' => ['TestController', 'test'],
         'login' => ['AuthController', 'showLoginForm'],
         'login-submit' => ['AuthController', 'handleLogin'],
         'conexion' => ['AuthController', 'login'],
@@ -9,7 +10,8 @@ class Router
         'register-submit' => ['AuthController', 'handleRegister'],
         'home' => ['Controller', 'showHome'],
         'logout' => ['AuthController', 'logout'],
-        'recipe/create' => ['RecipeController', 'showRecipe']
+        'recipe/create' => ['RecipeController', 'showRecipe'],
+        'recipe-submit' => ['RecipeController', 'handleCreateRecipe']
     ];
     public function dispatch()
     {

@@ -1,5 +1,7 @@
 <?php
 require_once "../config/helpers.php";
+require_once "../Models/Entities/Recipe.php";
+require_once "../Models/RecipeModel.php";
 class RecipeController
 {
     /**
@@ -18,5 +20,12 @@ class RecipeController
         }
     }
 
-    public function handleCreateRecipe() {}
+    public function handleCreateRecipe()
+    {
+        if (isset($_POST['title']) && isset($_POST['content']) && Helpers::isAuthenticated()) {
+            $newRecipe = new Recipe($_SESSION['UUID'], $_POST['title'], $_POST['content']);
+            $recipeModel = new RecipeModel();
+            $recipeModel->createRecipe($newRecipe);
+        }
+    }
 }

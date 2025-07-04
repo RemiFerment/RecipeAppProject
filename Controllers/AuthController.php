@@ -1,73 +1,13 @@
 <?php
-require_once "../config/database.php";
 require_once "../config/helpers.php";
+require_once "../Models/UserModel.php";
 class AuthController
 {
-
-    public function login(string $email, string $password): bool
-    {
-        $pdo = Database::getConnection();
-        if ($pdo !== null) {
-            $request = "SELECT * FROM user WHERE email = :email";
-            $statement = $pdo->prepare($request);
-            $statement->bindValue(":email", $email, PDO::PARAM_STR);
-            if ($statement->execute()) {
-                $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-                if (count($result) === 1 && password_verify($password, $result[0]['password'])) {
-                    $userInformation = $result[0];
-                    $_SESSION['UUID'] = $userInformation['UUID'];
-                    $_SESSION['pseudo'] = $userInformation['pseudo'];
-                    Helpers::setFlash("Connexion réussi !", "success");
-                    header("Location: ?page=home");
-                    exit;
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-        } else {
-            Helpers::setFlash("Impossible de communiquer avec la base de données, contacter l'administrateur", "error");
-            return false;
-        }
-        return false;
-    }
-    public function register(string $email, string $password, string $username): bool
-    {
-        $pdo = Database::getConnection();
-        if ($pdo !== null) {
-            $request = "SELECT * FROM user WHERE email = :email";
-            $statement = $pdo->prepare($request);
-            $statement->bindValue(":email", $email, PDO::PARAM_STR);
-            if ($statement->execute()) {
-                $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-                if (count($result) === 1) {
-                    //On retourne false car on souhaite que l'adresse mail soit unique.
-                    Helpers::setFlash("L'adresse mail est déjà utilisée.", "warning");
-                    return false;
-                } else  if (count($result) === 0) {
-                    //Il n'y a pas la même adresse mail, donc on peut insérer les données dans la base de donnée
-                    $registerRequest = "INSERT INTO user (UUID,pseudo,email,password,created_at) VALUES(UUID(),:pseudo,:email,:password,NOW())";
-                    $registerStmt = $pdo->prepare($registerRequest);
-                    $registerStmt->bindValue(':pseudo', $username);
-                    $registerStmt->bindValue(':email', $email);
-                    $registerStmt->bindValue(':password', password_hash($password, PASSWORD_BCRYPT));
-                    if ($registerStmt->execute()) {
-                        Helpers::setFlash("L'inscription a réussi !", "success");
-                        header("Location: ?page=login");
-                        exit;
-                        return true;
-                    }
-                }
-            }
-        } else {
-            Helpers::setFlash("Impossible de communiquer avec la base de données, contacter l'administrateur", "error");
-        }
-        return false;
-    }
     public function handleLogin()
     {
         if (isset($_POST['email']) && isset($_POST['password'])) {
-            if ($this->login($_POST['email'], $_POST['password'])) {
+            $userModel = new UserModel();
+            if ($userModel->login($_POST['email'], $_POST['password'])) {
                 return;
             } else {
                 Helpers::setFlash("L'adresse mail ou le mot de passe ne correspondent pas.", "error");
@@ -79,24 +19,26 @@ class AuthController
     public function handleRegister(): void
     {
         if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['username']) && isset($_POST['checkPassword'])) {
+            //Creation de l'objet User avec les données du formulaire
+            $user = new User("", $_POST['username'], $_POST['email'], $_POST['password'], false);
+            //Création des regex
+            $passwordRegex = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,}$/';
+            $usernameRegex = '/^.{4,}$/';
 
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $checkPassword = $_POST['checkPassword'];
-            $username = $_POST['username'];
-            $passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])[A-Za-z\d\S]{8,}$";
-            $usernameRegex = "^.{4,}$";
-
-            $checkFormIntegrity = (empty($email) || empty($password) || empty($checkPassword) || empty($username)) && (preg_match($passwordRegex,$password) && (preg_match($usernameRegex,$username)));
-            if ($checkFormIntegrity) {
-                Helpers::setFlash("Le formulaire est incomplet", "error");
+            if (!$user->checkUserIntegrity() || !preg_match($passwordRegex, $user->getPassword()) || !preg_match($usernameRegex, $user->getUsername())) {
+                Helpers::setFlash("Le formulaire est incomplet et/ou incorrect", "error");
+                header("Location: ?page=register");
+                exit;
                 return;
             }
-            if ($checkPassword === $password) {
-                $this->register(trim($email), trim($password), trim($username));
+            if ($user->checkPassword($_POST['checkPassword'])) {
+                $userModel = new UserModel();
+                $userModel->register($user);
                 return;
             } else {
-                echo '<span style="color: red;">Les champs des mots de passe ne correspondent pas.';
+                Helpers::setFlash("Les deux mots de passe saisie sont incorrect.", "error");
+                header("Location: ?page=register");
+                exit;
                 return;
             }
         } else {
