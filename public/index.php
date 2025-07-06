@@ -37,10 +37,27 @@ $specificScript = ""
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="?page=home">Accueil</a>
                         </li>
-                        </li>
+                        <?php
+                        if ($isConnected) {
+                        ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Recettes
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="text-center fw-bold mb-2">Mes Recettes :</li>
+                                    <li><a class="dropdown-item" href="?page=recipe/create">Créer une nouvelle recette</a></li>
+                                    <li><a class="dropdown-item" href="?page=recipe/my_recipe">Consulter mes recettes</a></li>
+                                </ul>
+                            </li>
+                        <?php } ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Compte
+                                <?php if (!$isConnected) { ?>
+                                    Connexion
+                                <?php } else { ?>
+                                    <?= ucfirst($username) ?>
+                                <?php } ?>
                             </a>
                             <ul class="dropdown-menu">
                                 <?php
@@ -53,8 +70,6 @@ $specificScript = ""
                                 ?>
                                     <li class="text-center fw-bold mb-2">Mon compte :</li>
                                     <li><a class="dropdown-item" href="#"><?= ucfirst($username) ?></a></li>
-                                    <li><a class="dropdown-item" href="?page=recipe/create">Créer une nouvelle recette</a></li>
-                                    <li><a class="dropdown-item" href="?page=recipe/my_recipe">Consulter mes recettes</a></li>
                                     <li><a class="dropdown-item" href="?page=logout">Se déconnecter</a></li>
                                     <?php
                                     if ($_SESSION['UUID'] === "541b425f-580e-11f0-97e1-581122c7a692") {
