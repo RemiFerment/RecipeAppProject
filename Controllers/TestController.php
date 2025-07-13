@@ -1,8 +1,12 @@
 <?php
 class TestController
 {
+    /**
+     * Fonction de test.
+     * Elle est configurée dans "routes.php" pour être accessible via l'URL "/test".
+     */
     public function test()
     {
-        echo "Rien à tester...";
+        throw new Error("Test", 100);
     }
 }

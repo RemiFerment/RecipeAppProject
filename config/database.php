@@ -22,8 +22,10 @@ class Database
                 self::$pdo = new PDO($dsn, $user, $password);
                 return self::$pdo;
             } catch (PDOException $e) {
-                //Journalisation à faire
-                echo "<h3>Impossible de se connecter à la base donnée !</h3>";
+                $messageError = $e->getMessage();
+                throw new Exception("Unable to connect at the database, check database Name, Username, password. Server down ? $messageError", 1001);
+
+                Helpers::ErrorFlash("Impossible de se connecter à la base donnée !", "login");
                 return null;
             }
         } else {

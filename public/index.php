@@ -1,5 +1,7 @@
 <?php
-require_once "../config/helpers.php";
+require_once "../private/private.php";
+require_once ROOT_DIR . "/config/helpers.php";
+require_once ROOT_DIR . "/config/errorManager.php";
 session_start();
 $isConnected = Helpers::isAuthenticated();
 if ($isConnected) {
